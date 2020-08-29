@@ -1,20 +1,23 @@
 import taichi as ti
 import taichi_three as t3
+import numpy as np
 
-ti.init(ti.cuda)
-scene = t3.Scene((1024, 1024))
+ti.init(ti.cpu)
 
-model = t3.Model(t3.readobj('assets/test.obj', 'assets/test.jpg', scale=0.55))
-model.init()
-
-scene.opt.diffuse = 0.4
-scene.camera.set([0, 0.5, -1], [0, 1, 0], [0, 1, 0])
+scene = t3.Scene()
+model = t3.Model(obj=t3.readobj('assets/monkey.obj', scale=0.8))
 scene.add_model(model)
-scene.set_light_dir([0.4, -1.5, -1.8])
-gui = ti.GUI('Model', scene.res)
+camera = t3.Camera()
+scene.add_camera(camera)
+
+light = t3.Light([0.4, -1.5, 1.8])
+scene.add_light(light)
+gui = ti.GUI('Model', camera.res)
 while gui.running:
-    gui.running = not gui.get_event(ti.GUI.ESCAPE)
-    model.L2W.from_mouse(gui)
-    scene._render()
-    gui.set_image(scene.img)
+    gui.get_event(None)
+    gui.running = not gui.is_pressed(ti.GUI.ESCAPE)
+    camera.from_mouse(gui)
+    #model.L2W.from_mouse(gui)
+    scene.render()
+    gui.set_image(camera.img)
     gui.show()
