@@ -5,20 +5,15 @@ import numpy as np
 ti.init(ti.cpu)
 
 scene = t3.Scene()
-model = t3.Model(f_n=2, vi_n=3)
+model = t3.Model(obj=t3.readobj('assets/torus.obj'),
+                 tex=ti.imread('assets/cloth.jpg'))
+camera = t3.Camera(pos=[0, 1, -1.8])
 scene.add_model(model)
-
-camera = t3.Camera()
 scene.add_camera(camera)
 
 light = t3.Light([0.4, -1.5, 1.8])
 scene.add_light(light)
-
-model.vi.from_numpy(np.array(
-    [[+0.0, +0.5, 0.0], [-0.5, -0.5, 0.0], [+0.5, -0.5, 0.0]]))
-model.faces.from_numpy(np.array([[0, 1, 2], [0, 2, 1]])) # both cull faces
-
-gui = ti.GUI('Triangle', camera.res)
+gui = ti.GUI('Model', camera.res)
 while gui.running:
     gui.get_event(None)
     gui.running = not gui.is_pressed(ti.GUI.ESCAPE)
